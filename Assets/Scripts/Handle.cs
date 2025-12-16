@@ -13,23 +13,23 @@ public class Handle : MonoBehaviour
 
     private void Start()
     {
-        carbool = player.GetComponent<Player_Movement>().NotInCar;
+        
         carcollider= car.GetComponent<Collider>();
     }
     private void OnMouseDown()
     {
         Vector3 pPosition = player.transform.localPosition;
-        if (carbool)
+        if (Player_Movement.NotInCar)
         {
-            carcollider.isTrigger = false;
+            carcollider.enabled = false;
             player.transform.localPosition = position.localPosition;
-            carbool = false;
+            Player_Movement.NotInCar = false;
         }
         else
         {
             player.transform.localPosition = pPosition;
-            carcollider.isTrigger = true;
-            carbool = true;
+            carcollider.enabled = true;
+            Player_Movement.NotInCar = true;
         }
         
     }

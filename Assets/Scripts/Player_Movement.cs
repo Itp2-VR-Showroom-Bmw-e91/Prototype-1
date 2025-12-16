@@ -5,7 +5,7 @@ public class Player_Movement : MonoBehaviour
 {
     public float speed = 5f;
     Rigidbody rb;
-    public bool NotInCar = true;
+    static public bool NotInCar = true;
 
     void Start()
     {
