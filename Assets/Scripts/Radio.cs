@@ -6,18 +6,20 @@ using System.Collections;
 public class Radio : MonoBehaviour
 {
     [System.Serializable]
-    public class RadioStation
+    public class Station
     {
-        public float minFrequency;
-        public float maxFrequency;
+        public float frequency;        // Fake-Frequenz
+        public string stationName;
         public string streamURL;
     }
 
-    public RadioStation[] stations;
+    public Station[] stations;
+    public float tuningTolerance = 0.15f;
+    public FrequencyController frequencyController;
 
     private AudioSource audioSource;
-    private Coroutine streamCoroutine;
-    private string currentURL = "";
+    private Coroutine playRoutine;
+    private Station currentStation;
 
     void Awake()
     {
@@ -28,35 +30,32 @@ public class Radio : MonoBehaviour
 
     public void UpdateFrequency(float frequency)
     {
-        string newURL = GetStationURL(frequency);
+        Station station = FindStation(frequency);
 
-        if (newURL == currentURL)
+        if (station == currentStation)
             return;
 
-        currentURL = newURL;
+        currentStation = station;
 
-        if (streamCoroutine != null)
-            StopCoroutine(streamCoroutine);
+        if (playRoutine != null)
+            StopCoroutine(playRoutine);
 
-        if (string.IsNullOrEmpty(newURL))
+        if (station == null)
         {
-            audioSource.Stop(); // kein Sender → Stille/Rauschen
+            audioSource.Stop(); // später: Rauschen
         }
         else
         {
-            streamCoroutine = StartCoroutine(PlayStream(newURL));
+            playRoutine = StartCoroutine(PlayStream(station.streamURL));
         }
     }
 
-    string GetStationURL(float frequency)
+    Station FindStation(float frequency)
     {
-        foreach (RadioStation station in stations)
+        foreach (Station s in stations)
         {
-            if (frequency >= station.minFrequency &&
-                frequency <= station.maxFrequency)
-            {
-                return station.streamURL;
-            }
+            if (Mathf.Abs(frequency - s.frequency) <= tuningTolerance)
+                return s;
         }
         return null;
     }
@@ -72,13 +71,22 @@ public class Radio : MonoBehaviour
 
             if (www.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError("Radio stream error: " + www.error);
+                Debug.LogError("Radio error: " + www.error);
                 yield break;
             }
 
-            AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
-            audioSource.clip = clip;
+            audioSource.clip = DownloadHandlerAudioClip.GetContent(www);
             audioSource.Play();
         }
     }
+
+    private void Update()
+    {
+        if(frequencyController.frequency!=currentStation.frequency||frequencyController.startButton)
+            {
+            UpdateFrequency(frequencyController.frequency);
+            PlayStream(currentStation.streamURL);
+            }
+    }
 }
+
