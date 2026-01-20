@@ -7,6 +7,8 @@ public class SoundManager : MonoBehaviour
     public AudioSource idle;
     public AudioSource end;
 
+    
+
     public bool startstop;
     public float fadeTime = 0.15f;
 
@@ -88,5 +90,17 @@ public class SoundManager : MonoBehaviour
         idle.Stop();       // JETZT erst stoppen
         idle.volume = 0f;
         end.volume = 1f;
+    }
+    private void OnMouseDown()
+    {
+        if (!startstop)
+        {
+            startstop = true;
+        }
+        else
+        {
+            startstop = false;
+        }
+        
     }
 }

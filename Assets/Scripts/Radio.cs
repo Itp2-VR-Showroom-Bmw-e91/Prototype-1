@@ -8,18 +8,22 @@ public class Radio : MonoBehaviour
     [System.Serializable]
     public class Station
     {
-        public float frequency;        // Fake-Frequenz
+        public float frequency;
         public string stationName;
         public string streamURL;
     }
 
+    [Header("Stations")]
     public Station[] stations;
     public float tuningTolerance = 0.15f;
+
+    [Header("References")]
     public FrequencyController frequencyController;
 
     private AudioSource audioSource;
     private Coroutine playRoutine;
     private Station currentStation;
+    private float lastFrequency;
 
     void Awake()
     {
@@ -28,7 +32,19 @@ public class Radio : MonoBehaviour
         audioSource.loop = true;
     }
 
-    public void UpdateFrequency(float frequency)
+    void Update()
+    {
+        if (frequencyController == null)
+            return;
+
+        if (Mathf.Approximately(lastFrequency, frequencyController.frequency))
+            return;
+
+        lastFrequency = frequencyController.frequency;
+        UpdateFrequency(lastFrequency);
+    }
+
+    void UpdateFrequency(float frequency)
     {
         Station station = FindStation(frequency);
 
@@ -38,11 +54,14 @@ public class Radio : MonoBehaviour
         currentStation = station;
 
         if (playRoutine != null)
+        {
             StopCoroutine(playRoutine);
+            playRoutine = null;
+        }
 
         if (station == null)
         {
-            audioSource.Stop(); // später: Rauschen
+            audioSource.Stop(); // optional: Rauschen
         }
         else
         {
@@ -79,14 +98,4 @@ public class Radio : MonoBehaviour
             audioSource.Play();
         }
     }
-
-    private void Update()
-    {
-        if(frequencyController.frequency!=currentStation.frequency||frequencyController.startButton)
-            {
-            UpdateFrequency(frequencyController.frequency);
-            PlayStream(currentStation.streamURL);
-            }
-    }
 }
-
