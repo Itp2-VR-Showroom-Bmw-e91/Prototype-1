@@ -2173,7 +2173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1731244805}
-  position: {fileID: 2008419375}
+  seatPosition: {fileID: 0}
   car: {fileID: 651601333}
 --- !u!135 &1332296895
 SphereCollider:
@@ -2643,7 +2643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1731244805}
-  position: {fileID: 2008419375}
+  seatPosition: {fileID: 0}
   car: {fileID: 651601333}
 --- !u!1 &1679897840
 GameObject:
