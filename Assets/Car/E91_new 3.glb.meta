@@ -26,6 +26,61 @@ ScriptedImporter:
     sceneObjectCreation: 2
   assetDependencies: []
   reportItems:
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_specular
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_anisotropy
+  - type: 2
+    code: 20
+    messages:
+    - KHR_materials_ior
+  - type: 2
+    code: 31
+    messages: []
   - type: 0
-    code: 59
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 0
+    code: 52
+    messages:
+    - 2
+  - type: 2
+    code: 31
     messages: []
