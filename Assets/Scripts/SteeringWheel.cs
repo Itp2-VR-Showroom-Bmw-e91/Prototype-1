@@ -1,24 +1,19 @@
 ﻿using UnityEngine;
 
-public class SteeringWheel: MonoBehaviour
+public class SteeringWheelVisual : MonoBehaviour
 {
     public float maxAngle = 450f;
-    public float currentAngle;
+    public float sensitivity = 2f;
+
+    private float angle;
 
     void Update()
     {
-        Vector3 localRot = transform.localEulerAngles;
+        float input = Input.GetAxis("Horizontal");
 
-        float z = localRot.z;
+        angle += input * sensitivity;
+        angle = Mathf.Clamp(angle, -maxAngle, maxAngle);
 
-        // 0–360 → -180–180
-        if (z > 180f)
-            z -= 360f;
-
-        currentAngle = Mathf.Clamp(z, -maxAngle, maxAngle);
-
-        // WICHTIG: nur Z setzen, X/Y behalten nicht manipulieren
-        currentAngle = -currentAngle;
-        transform.localRotation = Quaternion.Euler(0, currentAngle, 0);
-}
+        transform.localRotation = Quaternion.Euler(0f, angle, 0f);
+    }
 }
