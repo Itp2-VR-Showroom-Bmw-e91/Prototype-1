@@ -1,43 +1,24 @@
 ﻿using UnityEngine;
 
-public class SteeringWheel : MonoBehaviour
+public class SteeringWheel: MonoBehaviour
 {
-    public float maxRotation = 450f;
-    public float turnSpeed = 6f;
-    public float returnSpeed = 4f;
-
-    float currentRotation;
-    float targetRotation;
+    public float maxAngle = 450f;
+    public float currentAngle;
 
     void Update()
     {
-        if (Player_Movement.NotInCar) return;
+        Vector3 localRot = transform.localEulerAngles;
 
-        float input = 0f;
+        float z = localRot.z;
 
-        if (Input.GetKey(KeyCode.Q)) input = -1f;
-        if (Input.GetKey(KeyCode.E)) input = 1f;
+        // 0–360 → -180–180
+        if (z > 180f)
+            z -= 360f;
 
-        if (input != 0f)
-        {
-            targetRotation = input * maxRotation;
-            currentRotation = Mathf.Lerp(
-                currentRotation,
-                targetRotation,
-                Time.deltaTime * turnSpeed
-            );
-        }
-        else
-        {
-            currentRotation = Mathf.Lerp(
-                currentRotation,
-                0f,
-                Time.deltaTime * returnSpeed
-            );
-        }
+        currentAngle = Mathf.Clamp(z, -maxAngle, maxAngle);
 
-        // 🔹 LOKALE Rotation um eigene Z-Achse
-        transform.localEulerAngles =
-            new Vector3(0f, 0f, -currentRotation);
-    }
+        // WICHTIG: nur Z setzen, X/Y behalten nicht manipulieren
+        currentAngle = -currentAngle;
+        transform.localRotation = Quaternion.Euler(0, currentAngle, 0);
+}
 }
