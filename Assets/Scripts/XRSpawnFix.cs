@@ -9,16 +9,23 @@ public class XRSpawnFix : MonoBehaviour
 
     void Start()
     {
-        // Controller kurz aus
-        characterController.enabled = false;
+        if (xrOrigin == null || groundSpawnPoint == null)
+        {
+            Debug.LogError("XRSpawnFix: Referenzen fehlen!");
+            return;
+        }
 
-        // sauber auf Boden setzen
+        if (characterController != null)
+            characterController.enabled = false;
+
         xrOrigin.transform.SetPositionAndRotation(
             groundSpawnPoint.position,
             groundSpawnPoint.rotation
         );
 
-        // wieder aktivieren
-        characterController.enabled = true;
+        if (characterController != null)
+            characterController.enabled = true;
+
+        Debug.Log("Spieler gespawnt bei: " + groundSpawnPoint.position);
     }
 }
