@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.XR.Interaction.Toolkit;
 using Unity.XR.CoreUtils;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.ActionBasedContinuousMoveProvider;
 
 public class EnterCar : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class EnterCar : MonoBehaviour
     public Image fadeImage;
 
     [Header("Movement")]
-    public ActionBasedContinuousMoveProvider moveProvider;
+    public ActionBasedContinuousTurnProvider moveProvider;
     public ActionBasedContinuousTurnProvider turnProvider;
 
     [Header("Settings")]
@@ -45,7 +46,7 @@ public class EnterCar : MonoBehaviour
             seatPosition.position +
             seatPosition.up * seatOffsetUp;
 
-        xrOrigin.transform.SetPositionAndRotation(pos, seatPosition.rotation);
+        xrOrigin.transform.SetPositionAndRotation(seatPosition.position, seatPosition.rotation);
 
         yield return null;
         yield return null;
