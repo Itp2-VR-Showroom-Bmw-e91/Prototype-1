@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.XR.Interaction.Toolkit;
 using Unity.XR.CoreUtils;
-using UnityEngine.XR.Interaction.Toolkit.Locomotion.ActionBasedContinuousMoveProvider;
+
 
 public class EnterCar : MonoBehaviour
 {
@@ -13,8 +13,8 @@ public class EnterCar : MonoBehaviour
     public Image fadeImage;
 
     [Header("Movement")]
-    public ActionBasedContinuousTurnProvider moveProvider;
-    public ActionBasedContinuousTurnProvider turnProvider;
+    public ContinuousTurnProvider moveProvider;
+    public ContinuousTurnProvider turnProvider;
 
     [Header("Settings")]
     public float fadeDuration = 0.3f;
