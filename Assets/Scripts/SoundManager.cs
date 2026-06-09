@@ -1,34 +1,36 @@
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using System.Collections;
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable
 {
+    [Header("Audio")]
     public AudioSource start;
     public AudioSource idle;
     public AudioSource end;
-
-    
-
-    public bool startstop;
     public float fadeTime = 0.15f;
 
-    private bool isRunning;
+    private bool isRunning = false;
     private Coroutine fadeRoutine;
 
-    void Start()
+    protected override void Awake()
     {
+        base.Awake();
         idle.volume = 0f;
         idle.loop = true;
     }
 
-    void Update()
+    protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
-        if (startstop && !isRunning)
+        base.OnSelectEntered(args);
+
+        if (!isRunning)
         {
             StartSound();
             isRunning = true;
         }
-        else if (!startstop && isRunning)
+        else
         {
             StopSound();
             isRunning = false;
@@ -38,20 +40,16 @@ public class SoundManager : MonoBehaviour
     void StartSound()
     {
         start.Play();
-
         if (!idle.isPlaying)
-            idle.Play(); // EINMAL starten, dann nie wieder anfassen
-
+            idle.Play();
         if (fadeRoutine != null)
             StopCoroutine(fadeRoutine);
-
         fadeRoutine = StartCoroutine(FadeIdleInAfterStart());
     }
 
     IEnumerator FadeIdleInAfterStart()
     {
         yield return new WaitForSeconds(start.clip.length - fadeTime);
-
         float t = 0f;
         while (t < fadeTime)
         {
@@ -59,7 +57,6 @@ public class SoundManager : MonoBehaviour
             idle.volume = Mathf.Lerp(0f, 1f, t / fadeTime);
             yield return null;
         }
-
         idle.volume = 1f;
     }
 
@@ -67,7 +64,6 @@ public class SoundManager : MonoBehaviour
     {
         if (fadeRoutine != null)
             StopCoroutine(fadeRoutine);
-
         fadeRoutine = StartCoroutine(FadeOutIdleAndPlayEnd());
     }
 
@@ -75,10 +71,8 @@ public class SoundManager : MonoBehaviour
     {
         end.volume = 0f;
         end.Play();
-
         float startVol = idle.volume;
         float t = 0f;
-
         while (t < fadeTime)
         {
             t += Time.deltaTime;
@@ -86,21 +80,8 @@ public class SoundManager : MonoBehaviour
             end.volume = Mathf.Lerp(0f, 1f, t / fadeTime);
             yield return null;
         }
-
-        idle.Stop();       // JETZT erst stoppen
+        idle.Stop();
         idle.volume = 0f;
         end.volume = 1f;
-    }
-    private void OnMouseDown()
-    {
-        if (!startstop)
-        {
-            startstop = true;
-        }
-        else
-        {
-            startstop = false;
-        }
-        
     }
 }
