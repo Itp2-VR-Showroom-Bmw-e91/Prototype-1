@@ -9,6 +9,9 @@ public class DoorInteractable : UnityEngine.XR.Interaction.Toolkit.Interactables
     [SerializeField] private float closedAngle = 0f;
     [SerializeField] private float speed = 8f;
 
+    // NEU: Hier ziehst du im Inspector deinen Sitz-Collider rein (nur beim Haupt-Griff!)
+    [SerializeField] private Collider seatCollider;
+
     // Beim inneren Griff hier den äußeren Griff reinziehen, beim äußeren leer lassen
     [SerializeField] private DoorInteractable mainController;
 
@@ -25,6 +28,12 @@ public class DoorInteractable : UnityEngine.XR.Interaction.Toolkit.Interactables
             _initialForward = doorPivot.forward;
             _currentAngle = closedAngle;
             _targetAngle = closedAngle;
+
+            // Der Sitz-Collider ist standardmäßig AUS, wenn das Spiel startet
+            if (seatCollider != null)
+            {
+                seatCollider.enabled = false;
+            }
         }
     }
 
@@ -32,6 +41,12 @@ public class DoorInteractable : UnityEngine.XR.Interaction.Toolkit.Interactables
     {
         _isOpen = !_isOpen;
         _targetAngle = _isOpen ? openAngle : closedAngle;
+
+        // NEU: Schaltet den Sitz-Collider an (wenn offen) oder aus (wenn zu)
+        if (seatCollider != null)
+        {
+            seatCollider.enabled = _isOpen;
+        }
     }
 
     protected override void OnSelectEntered(SelectEnterEventArgs args)

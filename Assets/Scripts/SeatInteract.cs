@@ -5,30 +5,35 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 public class SeatInteract : MonoBehaviour
 {
     public VRSeat vrSeat;
-
-    private XRGrabInteractable grab;
+    private XRSimpleInteractable simpleInteractable;
 
     void Awake()
     {
-        grab = GetComponent<XRGrabInteractable>();
+        simpleInteractable = GetComponent<XRSimpleInteractable>();
 
-        if (grab == null)
+        if (simpleInteractable == null)
         {
-            Debug.LogError("XRGrabInteractable fehlt am Sitz!", this);
+            Debug.LogError("XRSimpleInteractable fehlt am Sitz! Bitte im Inspector hinzufügen.", this);
             return;
         }
 
-        grab.selectEntered.AddListener(OnSelect);
+        // Event abfangen, wenn der Controller den Sitz "anklickt"
+        simpleInteractable.selectEntered.AddListener(OnSelect);
     }
 
     void OnDestroy()
     {
-        if (grab != null)
-            grab.selectEntered.RemoveListener(OnSelect);
+        if (simpleInteractable != null)
+            simpleInteractable.selectEntered.RemoveListener(OnSelect);
     }
 
+    // NUR NOCH EINE Methode hier lassen:
     void OnSelect(SelectEnterEventArgs args)
     {
-        vrSeat.SitDown();
+        Debug.Log("SITZ WURDE GEKLICKT!"); 
+        if (vrSeat != null)
+        {
+            vrSeat.SitDown();
+        }
     }
 }
