@@ -1,100 +1,79 @@
-using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit.Locomotion;
+    using UnityEngine;
 
-public class VRSeat : MonoBehaviour
-{
-    public Transform seatPoint;
-    public GameObject xrOrigin;
-    public CharacterController characterController;
-
-    [Header("Collider zum Deaktivieren")]
-    public Collider carCollider;
-    public Collider driverSeatCollider;
-
-    private bool isSeated = false;
-    private Transform xrCamera;
-    private Vector3 targetOriginPos;
-    private Transform cameraOffset;
-    private LocomotionMediator locomotionMediator;
-
-    private void Start()
+    public class VRSeat : MonoBehaviour
     {
-        if (xrOrigin != null)
+        public Transform seatPoint;
+        public GameObject xrOrigin;   // Dein XR Origin (XR Rig)
+        public CharacterController characterController; 
+
+        [Header("Collider zum Deaktivieren")]
+        public Collider carCollider;       
+        public Collider driverSeatCollider; 
+
+        [Header("Locomotion Provider")]
+        [SerializeField] private MonoBehaviour moveProvider;
+        [SerializeField] private MonoBehaviour turnProvider;
+
+        private bool isSeated = false;
+        private Transform xrCamera;
+
+        private void Start()
         {
-            Camera mainCam = xrOrigin.GetComponentInChildren<Camera>();
-            if (mainCam != null) xrCamera = mainCam.transform;
-            
-            Transform offset = xrOrigin.transform.Find("Camera Offset");
-            if (offset != null) cameraOffset = offset;
-
-            locomotionMediator = xrOrigin.GetComponentInChildren<LocomotionMediator>();
-        }
-    }
-
-    public void SitDown()
-    {
-        if (isSeated || xrOrigin == null || seatPoint == null) return;
-
-        // 1. Collider aus
-        if (carCollider != null) carCollider.enabled = false;
-        if (driverSeatCollider != null) driverSeatCollider.enabled = false;
-
-        // 2. LOC-MEDIATOR: Ausschalten + Force-Stop
-        if (locomotionMediator != null)
-        {
-            locomotionMediator.enabled = false;
+            // Holt sich automatisch die Main Camera aus deinem Rig
+            if (xrOrigin != null)
+            {
+                Camera mainCam = xrOrigin.GetComponentInChildren<Camera>();
+                if (mainCam != null)
+                {
+                    xrCamera = mainCam.transform;
+                }
+            }
         }
 
-        // 3. Absolute Positionierung (Der "Fix" für den Arsch der Welt)
-        // Wir setzen das Rig direkt auf die Welt-Position des Sitzes
-        xrOrigin.transform.position = seatPoint.position;
-        xrOrigin.transform.rotation = seatPoint.rotation;
-
-        // 4. Offset-Korrektur (Damit die Kamera exakt im Sitz ist)
-        if (cameraOffset != null)
+        public void SitDown()
         {
-            Vector3 worldCameraPos = xrCamera.position;
-            Vector3 worldOriginPos = xrOrigin.transform.position;
-            Vector3 delta = worldCameraPos - worldOriginPos;
-            delta.y = 0; // Wichtig: Keine Höhenänderung durch die Kamera erzwingen
-            
-            xrOrigin.transform.position -= delta;
-            targetOriginPos = xrOrigin.transform.position; // Ziel für LateUpdate
+            if (isSeated) return;
+
+            if (xrOrigin != null && seatPoint != null && characterController != null && xrCamera != null)
+            {
+                // 1. Joysticks blockieren (Kein Laufen mehr möglich, Umschauen bleibt aktiv!)
+                if (moveProvider != null) moveProvider.enabled = false;
+                if (turnProvider != null) turnProvider.enabled = false;
+
+                // 2. Collider ausschalten (Verhindert das Rausfliegen)
+                if (carCollider != null) carCollider.enabled = false;
+                if (driverSeatCollider != null) driverSeatCollider.enabled = false;
+
+                // 3. Den Kamera-Offset berechnen und das Rig so verschieben,
+                // dass die AUGEN exakt auf dem seatPoint landen!
+                Vector3 cameraOffset = xrCamera.position - xrOrigin.transform.position;
+                xrOrigin.transform.position = seatPoint.position - cameraOffset;
+
+                // Rotation anpassen
+                xrOrigin.transform.rotation = seatPoint.rotation;
+
+                Physics.SyncTransforms();
+
+                isSeated = true;
+                Debug.Log("Sitz-Modus erfolgreich! Augen sind auf dem Target fixiert.");
+            }
         }
 
-        Physics.SyncTransforms();
-        isSeated = true;
-    }
-
-    private void LateUpdate()
-    {
-        if (isSeated && cameraOffset != null)
+        public void StandUp(Transform exitPoint)
         {
-            // FESTNAGELN:
-            xrOrigin.transform.position = targetOriginPos;
+            if (!isSeated || exitPoint == null) return;
 
-            // ANTI-MOVEMENT-TRICK:
-            // Wenn der Mediator wieder aktiv wird (durch Fokus-Wechsel),
-            // zwingen wir den Controller hier, jeden Frame auf 0 zu bleiben.
-            characterController.Move(Vector3.zero);
+            // Normaler Ausstieg
+            xrOrigin.transform.position = exitPoint.position;
+            xrOrigin.transform.rotation = exitPoint.rotation;
+            Physics.SyncTransforms();
+
+            // Collider und Joysticks wieder an
+            if (carCollider != null) carCollider.enabled = true;
+            if (driverSeatCollider != null) driverSeatCollider.enabled = true;
+            if (moveProvider != null) moveProvider.enabled = true;
+            if (turnProvider != null) turnProvider.enabled = true;
+
+            isSeated = false;
         }
     }
-
-    public void StandUp(Transform exitPoint)
-    {
-        if (!isSeated || exitPoint == null) return;
-
-        isSeated = false;
-        
-        // Erst aktivieren, dann bewegen
-        if (locomotionMediator != null) locomotionMediator.enabled = true;
-        
-        xrOrigin.transform.position = exitPoint.position;
-        xrOrigin.transform.rotation = exitPoint.rotation;
-
-        if (carCollider != null) carCollider.enabled = true;
-        if (driverSeatCollider != null) driverSeatCollider.enabled = true;
-
-        Physics.SyncTransforms();
-    }
-}
