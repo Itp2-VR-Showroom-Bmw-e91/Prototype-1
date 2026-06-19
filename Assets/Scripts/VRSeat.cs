@@ -1,84 +1,100 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion;
 
 public class VRSeat : MonoBehaviour
 {
     public Transform seatPoint;
-    public GameObject xrOrigin;   // Dein XR Origin (XR Rig)
-    public CharacterController characterController; 
+    public GameObject xrOrigin;
+    public CharacterController characterController;
 
-    [SerializeField] private MonoBehaviour moveProvider;
-    [SerializeField] private MonoBehaviour turnProvider;
+    [Header("Collider zum Deaktivieren")]
+    public Collider carCollider;
+    public Collider driverSeatCollider;
 
     private bool isSeated = false;
-
-    // Wir merken uns die originale Tracking-Einstellung, um sie beim Aufstehen wiederherzustellen
-    private Unity.XR.CoreUtils.XROrigin unityXROrigin;
+    private Transform xrCamera;
+    private Vector3 targetOriginPos;
+    private Transform cameraOffset;
+    private LocomotionMediator locomotionMediator;
 
     private void Start()
     {
         if (xrOrigin != null)
         {
-            unityXROrigin = xrOrigin.GetComponent<Unity.XR.CoreUtils.XROrigin>();
+            Camera mainCam = xrOrigin.GetComponentInChildren<Camera>();
+            if (mainCam != null) xrCamera = mainCam.transform;
+            
+            Transform offset = xrOrigin.transform.Find("Camera Offset");
+            if (offset != null) cameraOffset = offset;
+
+            locomotionMediator = xrOrigin.GetComponentInChildren<LocomotionMediator>();
         }
     }
 
     public void SitDown()
     {
-        if (isSeated) return;
+        if (isSeated || xrOrigin == null || seatPoint == null) return;
 
-        if (xrOrigin != null && seatPoint != null && characterController != null)
+        // 1. Collider aus
+        if (carCollider != null) carCollider.enabled = false;
+        if (driverSeatCollider != null) driverSeatCollider.enabled = false;
+
+        // 2. LOC-MEDIATOR: Ausschalten + Force-Stop
+        if (locomotionMediator != null)
         {
-            // 1. Bewegung & Physik kurz stoppen
-            characterController.enabled = false;
+            locomotionMediator.enabled = false;
+        }
 
-            // 2. VR-Kamera exakt auf den Sitz zwingen (Ignoriert ab jetzt die echte Körpergröße)
-            if (unityXROrigin != null)
-            {
-                unityXROrigin.RequestedTrackingOriginMode = Unity.XR.CoreUtils.XROrigin.TrackingOriginMode.Device;
-            }
+        // 3. Absolute Positionierung (Der "Fix" für den Arsch der Welt)
+        // Wir setzen das Rig direkt auf die Welt-Position des Sitzes
+        xrOrigin.transform.position = seatPoint.position;
+        xrOrigin.transform.rotation = seatPoint.rotation;
 
-            // 3. Exakte Position und Rotation setzen
-            xrOrigin.transform.position = seatPoint.position;
-            xrOrigin.transform.rotation = seatPoint.rotation;
+        // 4. Offset-Korrektur (Damit die Kamera exakt im Sitz ist)
+        if (cameraOffset != null)
+        {
+            Vector3 worldCameraPos = xrCamera.position;
+            Vector3 worldOriginPos = xrOrigin.transform.position;
+            Vector3 delta = worldCameraPos - worldOriginPos;
+            delta.y = 0; // Wichtig: Keine Höhenänderung durch die Kamera erzwingen
+            
+            xrOrigin.transform.position -= delta;
+            targetOriginPos = xrOrigin.transform.position; // Ziel für LateUpdate
+        }
 
-            // 4. Physik updaten und Controller wieder anwerfen
-            Physics.SyncTransforms();
-            characterController.enabled = true;
+        Physics.SyncTransforms();
+        isSeated = true;
+    }
 
-            // 5. Bewegung blockieren
-            if (moveProvider != null) moveProvider.enabled = false;
-            if (turnProvider != null) turnProvider.enabled = false;
+    private void LateUpdate()
+    {
+        if (isSeated && cameraOffset != null)
+        {
+            // FESTNAGELN:
+            xrOrigin.transform.position = targetOriginPos;
 
-            isSeated = true;
-            Debug.Log("Bombenfest auf Sitz fixiert – Augen sind jetzt exakt auf dem SeatPoint!");
+            // ANTI-MOVEMENT-TRICK:
+            // Wenn der Mediator wieder aktiv wird (durch Fokus-Wechsel),
+            // zwingen wir den Controller hier, jeden Frame auf 0 zu bleiben.
+            characterController.Move(Vector3.zero);
         }
     }
 
     public void StandUp(Transform exitPoint)
     {
-        if (!isSeated) return;
-
-        if (xrOrigin != null && exitPoint != null && characterController != null)
-        {
-            characterController.enabled = false;
-
-            // Beim Aufstehen wieder auf den echten Hallenboden (Körpergröße) zurückschalten
-            if (unityXROrigin != null)
-            {
-                unityXROrigin.RequestedTrackingOriginMode = Unity.XR.CoreUtils.XROrigin.TrackingOriginMode.Floor;
-            }
-
-            xrOrigin.transform.position = exitPoint.position;
-
-            Physics.SyncTransforms();
-            characterController.enabled = true;
-
-            if (moveProvider != null) moveProvider.enabled = true;
-            if (turnProvider != null) turnProvider.enabled = true;
-        }
+        if (!isSeated || exitPoint == null) return;
 
         isSeated = false;
-        Debug.Log("Aufgestanden – Normale Fortbewegung aktiv.");
+        
+        // Erst aktivieren, dann bewegen
+        if (locomotionMediator != null) locomotionMediator.enabled = true;
+        
+        xrOrigin.transform.position = exitPoint.position;
+        xrOrigin.transform.rotation = exitPoint.rotation;
+
+        if (carCollider != null) carCollider.enabled = true;
+        if (driverSeatCollider != null) driverSeatCollider.enabled = true;
+
+        Physics.SyncTransforms();
     }
 }

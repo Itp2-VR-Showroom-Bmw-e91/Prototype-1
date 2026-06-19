@@ -144,11 +144,11 @@ Transform:
   m_GameObject: {fileID: 40979247}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.2, y: 1.14, z: -0.348}
+  m_LocalPosition: {x: 3.17, y: 2.18, z: -0.059400007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 158844856}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &132620361 stripped
 GameObject:
@@ -332,8 +332,10 @@ MonoBehaviour:
   seatPoint: {fileID: 40979248}
   xrOrigin: {fileID: 277501090}
   characterController: {fileID: 277501095}
-  moveProvider: {fileID: 2067602243}
-  turnProvider: {fileID: 1474599201}
+  carCollider: {fileID: 1420039324}
+  driverSeatCollider: {fileID: 158844857}
+  moveProvider: {fileID: 0}
+  turnProvider: {fileID: 0}
 --- !u!4 &158844856
 Transform:
   m_ObjectHideFlags: 0
@@ -344,10 +346,9 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.01, y: 1.893, z: 0.219}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 40979248}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &158844857
@@ -1156,7 +1157,7 @@ MonoBehaviour:
   m_AllowHoverHapticsWhileSelecting: 1
   m_LineType: 0
   m_BlendVisualLinePoints: 1
-  m_MaxRaycastDistance: 30
+  m_MaxRaycastDistance: 100
   m_RayOriginTransform: {fileID: 0}
   m_ReferenceFrame: {fileID: 0}
   m_Velocity: 16
@@ -2186,7 +2187,7 @@ MonoBehaviour:
   m_AllowHoverHapticsWhileSelecting: 1
   m_LineType: 0
   m_BlendVisualLinePoints: 1
-  m_MaxRaycastDistance: 30
+  m_MaxRaycastDistance: 100
   m_RayOriginTransform: {fileID: 0}
   m_ReferenceFrame: {fileID: 0}
   m_Velocity: 16
@@ -4899,17 +4900,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1083187071}
   m_SourcePrefab: {fileID: -4161369568681901532, guid: 7332311f877d0314fa376f3ff9d043fc, type: 3}
---- !u!114 &1474599201 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7347985736721345035, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
-  m_PrefabInstance: {fileID: 964101918}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9f365cf844c03449bc8973eead2c3c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1782442204
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5169,17 +5159,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 360643970572733929, guid: 7332311f877d0314fa376f3ff9d043fc, type: 3}
   m_PrefabInstance: {fileID: 1460297161}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2067602243 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 153982007679157697, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
-  m_PrefabInstance: {fileID: 964101918}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b1e8c997df241c1a67045eeac79b41b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2105665303
 GameObject:
   m_ObjectHideFlags: 0
@@ -5304,6 +5283,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 459131073}
+  - {fileID: 40979248}
   - {fileID: 158844856}
   - {fileID: 216514929}
   - {fileID: 2105665307}
