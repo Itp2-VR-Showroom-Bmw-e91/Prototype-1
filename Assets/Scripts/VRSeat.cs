@@ -10,7 +10,7 @@ public class VRSeat : MonoBehaviour
     public Transform seatPoint;
     public GameObject xrOrigin;
     public CharacterController characterController;
-    [SerializeField] DoorInteractable doorInteractable;
+    [SerializeField] private PlayerMovementController playerMovementController;
 
     [Header("Collider zum Deaktivieren")]
     public Collider[] carCollider;
@@ -85,7 +85,11 @@ public class VRSeat : MonoBehaviour
                         col.enabled = false;
                 }
             }
-
+            if (playerMovementController != null)
+            {
+                playerMovementController.DisableMovement();
+                Debug.Log("movement deaktiviert");
+            }
 
             Vector3 cameraOffset = xrCamera.position - xrOrigin.transform.position;
             xrOrigin.transform.position = seatPoint.position - cameraOffset;
@@ -174,6 +178,12 @@ public class VRSeat : MonoBehaviour
 
         if (moveProvider != null) moveProvider.enabled = true;
         if (turnProvider != null) turnProvider.enabled = true;
+
+        if (playerMovementController != null)
+        {
+            playerMovementController.EnableMovement();
+            Debug.Log("movement aktiviert");
+        }
 
         isSeated = false;
         SetSeatInteractionEnabled(true);
