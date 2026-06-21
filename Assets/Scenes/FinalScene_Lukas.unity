@@ -144,7 +144,7 @@ Transform:
   m_GameObject: {fileID: 40979247}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.17, y: 2.807, z: -0.059400007}
+  m_LocalPosition: {x: 3.9700003, y: 2.807, z: -0.059400007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -332,7 +332,10 @@ MonoBehaviour:
   seatPoint: {fileID: 40979248}
   xrOrigin: {fileID: 277501090}
   characterController: {fileID: 277501095}
-  carCollider: {fileID: 1420039324}
+  carCollider:
+  - {fileID: 708883117}
+  - {fileID: 1420039324}
+  - {fileID: 670778644}
   driverSeatCollider: {fileID: 158844857}
   moveProvider: {fileID: 0}
   turnProvider: {fileID: 0}
@@ -345,7 +348,7 @@ Transform:
   m_GameObject: {fileID: 158844850}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.01, y: 1.893, z: 0.219}
+  m_LocalPosition: {x: 3.8100002, y: 1.893, z: 0.219}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3282,7 +3285,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3910990755373119420, guid: 7332311f877d0314fa376f3ff9d043fc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.12
+      value: 4.92
       objectReference: {fileID: 0}
     - target: {fileID: -3910990755373119420, guid: 7332311f877d0314fa376f3ff9d043fc, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4872,7 +4875,7 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -3910990755373119420, guid: 7332311f877d0314fa376f3ff9d043fc, type: 3}
-      insertIndex: -1
+      insertIndex: 12
       addedObject: {fileID: 708883116}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -5502637227195186502, guid: 7332311f877d0314fa376f3ff9d043fc, type: 3}
@@ -4926,7 +4929,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8688982062548017324, guid: e6084503f826bbb428b1e677dc1a75d4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.5
+      value: 4.3
       objectReference: {fileID: 0}
     - target: {fileID: 8688982062548017324, guid: e6084503f826bbb428b1e677dc1a75d4, type: 3}
       propertyPath: m_LocalPosition.y
