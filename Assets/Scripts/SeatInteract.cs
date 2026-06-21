@@ -17,7 +17,6 @@ public class SeatInteract : MonoBehaviour
             return;
         }
 
-        // Event abfangen, wenn der Controller den Sitz "anklickt"
         simpleInteractable.selectEntered.AddListener(OnSelect);
     }
 
@@ -27,13 +26,11 @@ public class SeatInteract : MonoBehaviour
             simpleInteractable.selectEntered.RemoveListener(OnSelect);
     }
 
-    // NUR NOCH EINE Methode hier lassen:
     void OnSelect(SelectEnterEventArgs args)
     {
-        Debug.Log("SITZ WURDE GEKLICKT!"); 
-        if (vrSeat != null)
-        {
-            vrSeat.SitDown();
-        }
+        if (vrSeat == null || vrSeat.IsSeated)
+            return;
+
+        vrSeat.SitDown(args);
     }
 }
